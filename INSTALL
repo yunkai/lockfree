@@ -1,0 +1,40 @@
+BUILD AND INSTALLATION
+----------------------
+
+Configure & Build from source:
+    $ autoreconf -i  # generate the configure script and Makefile.in files
+
+On Linux, OSX and FreeBSD:
+    $ ./configure [--prefix=PREFIX]
+    $ make
+
+On OpenSolaris:
+    $ ./configure [--prefix=PREFIX]
+    $ gmake
+
+To install:
+    $ sudo make install
+
+* Replace PREFIX with the filesystem path under which Traffic Server
+  should be installed.  Default PREFIX is "/usr/local" (without the
+  quotes).
+
+* If you want to build using different layout see the config.layout
+  file for possible alternatives. You can create your own layout
+  and enable it with ./configure --enable-layout=ID, where ID is
+  the layout name you have created.
+
+* The easiest way to find all of the configuration flags
+  for Traffic Server is to run ./configure --help.
+
+To build the examples in example directory use
+    $ make examples
+
+To installl the examples inside current layout libexecdir use the
+    $ sudo make install-examples
+
+By default the build will use the highest level of compiler
+optimization. To alter this, specify your own optimizer flags at
+configuration time:
+
+    $ ./configure CXXFLAGS=-Os CFLAGS=-Os
