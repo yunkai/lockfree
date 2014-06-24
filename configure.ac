@@ -22,5 +22,6 @@ AC_CHECK_HEADER_STDBOOL
 AC_FUNC_MALLOC
 
 AC_CONFIG_FILES([Makefile
-                 ring/Makefile])
+                 ring/Makefile
+                 stack/Makefile])
 AC_OUTPUT

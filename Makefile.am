@@ -1,1 +1,1 @@
-SUBDIRS = ring
+SUBDIRS = ring stack

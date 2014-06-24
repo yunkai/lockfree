@@ -2,75 +2,79 @@
 #include "stdlib.h"
 
 struct ring_t {
-	void **buf;
-	int size;
-	volatile int head;
-	volatile int tail;
+  void **buf;
+  int size;
+  volatile int head;
+  volatile int tail;
 };
 
-ring_t
-ring_create(void *buf[], int size)
+ring_t*
+ring_new(void *buf[], int size)
 {
-	ring_t r = malloc(sizeof(struct ring_t));
+  ring_t *r = malloc(sizeof(ring_t));
 
-	r->buf = buf;
-	r->size = size;
+  r->buf = buf;
+  r->size = size;
 
 
-	//
-	// 1) head and tail should always less than size.
-	// 2) head == tail, means empty.
-	// 3) (head + 1) % size == tail, means full.
-	//
-	r->head = 0;
-	r->tail = 0;
+  //
+  // 1) head and tail should always less than size.
+  // 2) head == tail, means empty.
+  // 3) (head + 1) % size == tail, means full.
+  //
+  r->head = 0;
+  r->tail = 0;
 
-	return r;
+  return r;
 }
 
 void
-ring_destroy(ring_t r)
+ring_free(ring_t *r)
 {
-	free(r);
+  free(r);
 }
 
 bool
-ring_put(ring_t r, void *data)
+ring_put(ring_t *r, void *data)
 {
-	int idx;
+  int idx;
 
-	idx = (r->head + 1) % r->size;
+  idx = (r->head + 1) % r->size;
 
-	//
-	// Is buffer full?
-	//
-	if (idx == r->tail)
-		return false;
+  //
+  // Is buffer full?
+  //
+  if (idx == r->tail)
+    return false;
 
-	r->buf[idx] = data;
+  r->buf[idx] = data;
 
-	r->head = idx;
+  smp_wmb();
 
-	return true;
+  r->head = idx;
+
+  return true;
 }
 
 bool
-ring_get(ring_t r, void **data)
+ring_get(ring_t *r, void **data)
 {
-	int idx;
+  int idx;
 
-	//
-	// Is buffer empty?
-	//
-	if (r->tail == r->head)
-		return false;
+  idx = r->tail;
 
-	idx = r->tail;
+  //
+  // Is buffer empty?
+  //
+  if (idx == r->head)
+    return false;
 
-	r->tail = (r->tail + 1) % r->size;
+  smp_read_barrier_depends();
 
-	*data = r->buf[idx];
+  *data = r->buf[idx];
 
-	return true;
+  r->tail = (r->tail + 1) % r->size;
+
+  return true;
 }
 

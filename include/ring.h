@@ -1,9 +1,9 @@
 #ifndef _RING_H_
 #define _RING_H_
 
-#include "stdbool.h"
+#include <stdbool.h>
 
-typedef struct ring_t *ring_t;
+typedef struct ring_t ring_t;
 
 //
 // !!NOTE!!:
@@ -17,9 +17,9 @@ typedef struct ring_t *ring_t;
 //        _size_ elements with void* type.
 // size: the size of buf[] array. 
 //
-// return created ring buffer.
+// return the new ring buffer.
 //
-extern ring_t ring_create(void *buf[], int size);
+extern ring_t *ring_new(void *buf[], int size);
 
 //
 // Put data into ring buffer
@@ -29,7 +29,7 @@ extern ring_t ring_create(void *buf[], int size);
 // return false if fail to put when buffer is full,
 // else return true.
 //
-extern bool ring_put(ring_t r, void *data);
+extern bool ring_put(ring_t *r, void *data);
 
 
 //
@@ -41,11 +41,11 @@ extern bool ring_put(ring_t r, void *data);
 // return false if buffer is empty,
 // else return true.
 //
-extern bool ring_get(ring_t r, void **data);
+extern bool ring_get(ring_t *r, void **data);
 
 //
 // Destroy ring buffer
 //
-extern void ring_destroy(ring_t r);
+extern void ring_free(ring_t *r);
 
 #endif
